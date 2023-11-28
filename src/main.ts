@@ -21,7 +21,6 @@ async function bootstrap() {
     .setTitle('Store & retrieve data securely')
     .setDescription('Save and retrieve json data while storing them securely. All data at rest must be securely encrypted with the key provided by the clients.')
     .setVersion('1.0')
-    .addTag('alacrity')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
