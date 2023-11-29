@@ -48,13 +48,18 @@ function decrypt(encrypted, password) {
     return decrypted.toString();
 }
 
-function hashEncryptKey(encryptedKey, salt) {
-    return crypto.pbkdf2Sync(encryptedKey, salt, 1000, 64, 'sha512').toString('hex');;
+function hashEncryptKey(encryptKey, salt) {
+    return crypto.pbkdf2Sync(encryptKey, salt, 1000, 64, 'sha512').toString('hex');;
+}
+
+function isValidDecryptKey(encryptKey, decryptKey, salt) {
+    return decryptKey == hashEncryptKey(encryptKey, salt);
 }
 
 export {
     stringTo16ByteIV,
     encrypt,
     decrypt,
-    hashEncryptKey
+    hashEncryptKey,
+    isValidDecryptKey,
 }

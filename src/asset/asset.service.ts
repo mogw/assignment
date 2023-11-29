@@ -5,8 +5,9 @@ import { StoreAssetDto } from './dto/store-asset.dto';
 import { RetrieveAssetDto } from './dto/retrieve-asset.dto';
 import { Asset } from './entities/asset.entity';
 import { Like, Repository } from 'typeorm';
-import { encrypt, decrypt, hashEncryptKey } from 'src/common/helper';
+import { encrypt, decrypt, hashEncryptKey, isValidDecryptKey } from 'src/common/helper';
 import { StoreAssetResultDto, RetrieveAssetResultDto } from './dto/index.dto';
+
 @Injectable()
 export class AssetService {
   constructor(
@@ -53,12 +54,19 @@ export class AssetService {
     let result = [];
     records.forEach((r) => {
       try {
-        const decrypted = decrypt(
+        // Validate `decrypt_key`
+        const salt = process.env.SECRET_KEY;
+        if (!isValidDecryptKey(r.encryptKey, retrieveAssetDto.decrypt_key, salt)) {
+          return console.log('invalid decrypt_key');
+        }
+
+        // Decrypt data
+        const decryptedData = decrypt(
           r.encryptedData,
           retrieveAssetDto.decrypt_key,
         );
 
-        result.push(new RetrieveAssetResultDto(r.id, JSON.parse(decrypted)))
+        result.push(new RetrieveAssetResultDto(r.id, JSON.parse(decryptedData)))
       } catch (error) {
         console.log('error', error);
       }
